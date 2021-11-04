@@ -1,15 +1,13 @@
 import requests
 import datetime
 import time
-
+import config
 
 # 健身房预约时间
 class GymTime:
     def __init__(self, gym_dict):
         for key in gym_dict:
             setattr(self, key, gym_dict[key])
-
-
 
 
 # 判断是否可预约
@@ -83,17 +81,11 @@ if __name__ == "__main__":
     server_key = ""
 
     # 用户信息（需要替换自己的）
-    user_info = {
-        'userName': '',
-        'userPhone': '',
-        'userIdentityNo': '',
-    }
+    user_info = config.user_info
+    openId = config.openId
 
     # 需要预约的时间（12 14 17）
-    gym_time = 17
-
-    # 微信 openId（需要替换自己的）
-    openId = ''
+    gym_time = 14
 
     # 请求
     s = requests.Session()
@@ -111,6 +103,7 @@ if __name__ == "__main__":
 
     # 查看是否还可预约
     flag = is_gym_order(date, time_detail.get("minDate"), time_detail.get("maxDate"))
+    print("is_order:", flag)
 
     if flag:
         r = gym_order(date, time_detail)
