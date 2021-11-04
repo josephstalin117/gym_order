@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-import time
-
 import requests
 import datetime
+import time
 
 
 # 健身房预约时间
@@ -12,29 +10,6 @@ class GymTime:
             setattr(self, key, gym_dict[key])
 
 
-# server酱 key（不填无所谓，只不过无法收到通知）
-server_key = ""
-
-# 用户信息（需要替换自己的）
-user_info = {
-    # 姓名
-    'userName': '',
-    # 手机号
-    'userPhone': '',
-    # 身份证号
-    'userIdentityNo': '',
-}
-
-# 需要预约的时间（12 14 17）
-gym_time = 17
-
-# 微信 openId（需要替换自己的）
-openId = ''
-
-# 请求
-s = requests.Session()
-header = {"User-Agent": "Mozilla/5.0 (Linux; Android 10;  AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36 wxwork/3.0.16 MicroMessenger/7.0.1 NetType/WIFI Language/zh",}
-s.headers.update(header)
 
 
 # 判断是否可预约
@@ -55,6 +30,7 @@ def is_gym_order(date, startTime, endTime):
     return False
 
 
+# 进行预约
 def gym_order(date, time_detail):
     url = "http://wechartdemo.zckx.net/Ticket/SaveOrder?"
 
@@ -102,7 +78,28 @@ def send_message(key, title, body):
     requests.get(msg_url)
 
 
-def handler(event, context):
+if __name__ == "__main__":
+    # server酱 key（不填无所谓，只不过无法收到通知）
+    server_key = ""
+
+    # 用户信息（需要替换自己的）
+    user_info = {
+        'userName': '',
+        'userPhone': '',
+        'userIdentityNo': '',
+    }
+
+    # 需要预约的时间（12 14 17）
+    gym_time = 17
+
+    # 微信 openId（需要替换自己的）
+    openId = ''
+
+    # 请求
+    s = requests.Session()
+    header = {"User-Agent": "Mozilla/5.0 (Linux; Android 10;  AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36 wxwork/3.0.16 MicroMessenger/7.0.1 NetType/WIFI Language/zh",}
+    s.headers.update(header)
+
     # 预约时间
     order_time = {
         "12": {"minDate": "12:00", "maxDate": "14:00", "strategy": "1000000175"},
@@ -119,7 +116,7 @@ def handler(event, context):
         r = gym_order(date, time_detail)
 
         # 发送请求后，挂起10分钟，再请求查看是否成功
-        time.sleep(6000)
+        time.sleep(600)
 
         is_success = is_success_order(date)
         if is_success:
