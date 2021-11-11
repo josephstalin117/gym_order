@@ -1,22 +1,19 @@
+#coding=utf-8
 import requests
 import datetime
 import time
 import config
 
-# 健身房预约时间
 class GymTime:
     def __init__(self, gym_dict):
         for key in gym_dict:
             setattr(self, key, gym_dict[key])
 
 
-# 判断是否可预约
 def is_gym_order(date, startTime, endTime):
-    # 拿到预约数据
     url = "http://wechartdemo.zckx.net/API/TicketHandler.ashx?dataType=json&date=" + date + "&projectNo=1000000637&method=GetStrategyList";
     data = s.get(url).json().get("list")
 
-    # 遍历判断
     for item in data:
         gym_item = GymTime(item)
         if startTime == gym_item.sTime and endTime == gym_item.eTime:
@@ -28,7 +25,6 @@ def is_gym_order(date, startTime, endTime):
     return False
 
 
-# 进行预约
 def gym_order(date, time_detail):
     url = "http://wechartdemo.zckx.net/Ticket/SaveOrder?"
 
@@ -60,7 +56,6 @@ def gym_order(date, time_detail):
     return r.json()
 
 
-# 查看是否预约成功
 def is_success_order(date):
     url = "https://wechartdemo.zckx.net/Ticket/MyOrder?openId=" + openId
     gym_html = s.get(url).text
@@ -70,29 +65,33 @@ def is_success_order(date):
     return False
 
 
-# 微信通知
+# wechat
 def send_message(key, title, body):
     msg_url = "https://sc.ftqq.com/{}.send?text={}&desp={}".format(key, title, body)
     requests.get(msg_url)
 
 
 if __name__ == "__main__":
-    # server酱 key（不填无所谓，只不过无法收到通知）
-    server_key = ""
+    #server_key = ""
 
-    # 用户信息（需要替换自己的）
     user_info = config.user_info
     openId = config.openId
 
-    # 需要预约的时间（12 14 17）
+    server_key = config.server_key
+
+    #user_info = {
+    #    'userName': '',
+    #    'userPhone': '',
+    #    'userIdentityNo': '',
+    #}
+    #openId = ''
+
     gym_time = 14
 
-    # 请求
     s = requests.Session()
     header = {"User-Agent": "Mozilla/5.0 (Linux; Android 10;  AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36 wxwork/3.0.16 MicroMessenger/7.0.1 NetType/WIFI Language/zh",}
     s.headers.update(header)
 
-    # 预约时间
     order_time = {
         "12": {"minDate": "12:00", "maxDate": "14:00", "strategy": "1000000175"},
         "14": {"minDate": "14:30", "maxDate": "16:30", "strategy": "1000000176"},
@@ -101,20 +100,20 @@ if __name__ == "__main__":
     date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     time_detail = order_time.get(str(gym_time))
 
-    # 查看是否还可预约
     flag = is_gym_order(date, time_detail.get("minDate"), time_detail.get("maxDate"))
-    print("is_order:", flag)
 
     if flag:
         r = gym_order(date, time_detail)
 
-        # 发送请求后，挂起10分钟，再请求查看是否成功
         time.sleep(600)
 
         is_success = is_success_order(date)
         if is_success:
             send_message(server_key, str(gym_time) + "预约成功", r)
+            print("预约成功")
         else:
             send_message(server_key, str(gym_time) + "预约失败", r)
+            print("预约失败")
     else:
         send_message(server_key, str(gym_time) + "不可预约", flag)
+        print("不可预约")
