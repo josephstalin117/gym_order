@@ -25,7 +25,7 @@ def is_gym_order(date, startTime, endTime):
     return False
 
 
-def gym_order(date, time_detail):
+def gym_order(date, time_detail, user_info, open_id):
     url = "http://wechartdemo.zckx.net/Ticket/SaveOrder?"
 
     other_info = {
@@ -45,13 +45,13 @@ def gym_order(date, time_detail):
         'styleInfoList': [other_info],
         'userDate': date,
         'totalprice': 0,
-        'openId': openId,
+        'openId': open_id,
         'sellerNo': 'weixin'
     }
     url = url + 'dataType=json&orderJson=' + str(data)
     print(url)
     r = s.post(url)
-    # print(r.json())
+    print(r.json())
 
     return r.json()
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     #server_key = ""
 
     user_info = config.user_info
-    openId = config.openId
+    open_id = config.openId
 
     server_key = config.server_key
 
@@ -103,7 +103,8 @@ if __name__ == "__main__":
     flag = is_gym_order(date, time_detail.get("minDate"), time_detail.get("maxDate"))
 
     if flag:
-        r = gym_order(date, time_detail)
+        r = gym_order(date, time_detail, user_info, open_id)
+        print(r)
 
         time.sleep(600)
 
