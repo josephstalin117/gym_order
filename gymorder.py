@@ -25,7 +25,7 @@ def is_gym_order(date, startTime, endTime):
     return False
 
 
-def gym_order(date, time_detail, user_info, open_id):
+def gym_order(date, time_detail, user_info, open_id, request_session):
     url = "http://wechartdemo.zckx.net/Ticket/SaveOrder?"
 
     other_info = {
@@ -49,15 +49,14 @@ def gym_order(date, time_detail, user_info, open_id):
         'sellerNo': 'weixin'
     }
     url = url + 'dataType=json&orderJson=' + str(data)
-    print(url)
-    r = s.post(url)
+    r = request_session.post(url)
     print(r.json())
 
     return r.json()
 
 
-def is_success_order(date):
-    url = "https://wechartdemo.zckx.net/Ticket/MyOrder?openId=" + openId
+def is_success_order(date, open_id):
+    url = "https://wechartdemo.zckx.net/Ticket/MyOrder?openId=" + open_id
     gym_html = s.get(url).text
     new_date = date.split("-")[0] + '年' + date.split("-")[1] + '月' + date.split("-")[2] + '日'
     if new_date in gym_html:
@@ -100,15 +99,15 @@ if __name__ == "__main__":
     date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     time_detail = order_time.get(str(gym_time))
 
-    flag = is_gym_order(date, time_detail.get("minDate"), time_detail.get("maxDate"))
+    #flag = is_gym_order(date, time_detail.get("minDate"), time_detail.get("maxDate"))
+    flag = True
 
     if flag:
-        r = gym_order(date, time_detail, user_info, open_id)
-        print(r)
+        r = gym_order(date, time_detail, user_info, open_id, s)
 
         time.sleep(600)
 
-        is_success = is_success_order(date)
+        is_success = is_success_order(date, open_id)
         if is_success:
             send_message(server_key, str(gym_time) + "预约成功", r)
             print("预约成功")
