@@ -3,6 +3,7 @@ import requests
 import datetime
 import time
 import config
+import json
 
 class GymTime:
     def __init__(self, gym_dict):
@@ -50,7 +51,6 @@ def gym_order(date, time_detail, user_info, open_id, request_session):
     }
     url = url + 'dataType=json&orderJson=' + str(data)
     r = request_session.post(url)
-    print(r.json())
 
     return r.json()
 
@@ -103,17 +103,18 @@ if __name__ == "__main__":
     flag = True
 
     if flag:
-        r = gym_order(date, time_detail, user_info, open_id, s)
-
-        time.sleep(600)
-
-        is_success = is_success_order(date, open_id)
-        if is_success:
-            send_message(server_key, str(gym_time) + "预约成功", r)
-            print("预约成功")
-        else:
-            send_message(server_key, str(gym_time) + "预约失败", r)
-            print("预约失败")
+        n = 0
+        while n < 5:
+            time.sleep(2)
+            r = gym_order(date, time_detail, user_info, open_id, s)
+            if r['Code'] == '100000':
+                send_message(server_key, str(gym_time) + "预约成功" + r['Code'], r)
+                print("code:", r['Code'], "预约成功")   
+                break
+            if r['Code'] == '100099': 
+                send_message(server_key, str(gym_time) + "预约失败" + r['Code'], r)
+                print( "code:", r['Code'], "预约失败")
+                break
     else:
         send_message(server_key, str(gym_time) + "不可预约", flag)
         print("不可预约")
