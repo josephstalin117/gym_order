@@ -51,8 +51,11 @@ def gym_order(date, time_detail, user_info, open_id, request_session):
     }
     url = url + 'dataType=json&orderJson=' + str(data)
     r = request_session.post(url)
-
-    return r.json()
+    print(r.content)
+    try:
+        return r.json()
+    except:
+        return None
 
 
 def is_success_order(date, open_id):
@@ -109,11 +112,13 @@ if __name__ == "__main__":
             r = gym_order(date, time_detail, user_info, open_id, s)
             if r['Code'] == '100000':
                 send_message(server_key, str(gym_time) + "预约成功" + r['Code'], r)
-                print("code:", r['Code'], "预约成功")   
+                print("预约成功")   
+                print("code:", r['Code'])
                 break
             if r['Code'] == '100099': 
                 send_message(server_key, str(gym_time) + "预约失败" + r['Code'], r)
-                print( "code:", r['Code'], "预约失败")
+                print("code:", r['Code'], "预约失败")
+                print("预约失败")
                 break
     else:
         send_message(server_key, str(gym_time) + "不可预约", flag)
