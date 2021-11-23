@@ -110,14 +110,16 @@ if __name__ == "__main__":
         while n < 5:
             time.sleep(2)
             r = gym_order(date, time_detail, user_info, open_id, s)
-            if r['Code'] == '100000':
+            if r == None:
+                pass
+            elif r['Code'] == '100000':
                 send_message(server_key, str(gym_time) + "预约成功" + r['Code'], r)
                 print("预约成功")   
                 print("code:", r['Code'])
                 break
-            if r['Code'] == '100099': 
+            elif r['Code'] == '100099': 
                 send_message(server_key, str(gym_time) + "预约失败" + r['Code'], r)
-                print("code:", r['Code'], "预约失败")
+                print("code:", r['Code'])
                 print("预约失败")
                 break
     else:
