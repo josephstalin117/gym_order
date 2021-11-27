@@ -51,7 +51,6 @@ def gym_order(date, time_detail, user_info, open_id, request_session):
     }
     url = url + 'dataType=json&orderJson=' + str(data)
     r = request_session.post(url)
-    print(r.content)
     try:
         return r.json()
     except:
@@ -107,10 +106,12 @@ if __name__ == "__main__":
 
     if flag:
         n = 0
-        while n < 5:
-            time.sleep(2)
+        while n < 10:
             r = gym_order(date, time_detail, user_info, open_id, s)
+            n += 1
+            print(n)
             if r == None:
+                time.sleep(2)
                 pass
             elif r['Code'] == '100000':
                 send_message(server_key, str(gym_time) + "预约成功" + r['Code'], r)
