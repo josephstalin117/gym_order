@@ -109,20 +109,27 @@ if __name__ == "__main__":
         while n < 10:
             r = gym_order(date, time_detail, user_info, open_id, s)
             n += 1
-            print(n)
+            print("times", n)
             if r == None:
                 time.sleep(2)
                 pass
             elif r['Code'] == '100000':
-                send_message(server_key, str(gym_time) + "预约成功" + r['Code'], r)
+                send_message(server_key, str(gym_time) + "预约成功" + r['Code'] + "预约次数" + n, r)
                 print("预约成功")   
                 print("code:", r['Code'])
                 break
             elif r['Code'] == '100099': 
-                send_message(server_key, str(gym_time) + "预约失败" + r['Code'], r)
-                print("code:", r['Code'])
+                send_message(server_key, str(gym_time) + "预约失败" + r['Code']+ "预约次数" + n, r)
                 print("预约失败")
+                print("code:", r['Code'])
                 break
+            elif r['Code'] == '110000': 
+                print("预约失败, 预约时间错误")
+                print("code:", r['Code'])
+                break
+            else:
+                print("预约失败")
+                print(r)
     else:
         send_message(server_key, str(gym_time) + "不可预约", flag)
         print("不可预约")
