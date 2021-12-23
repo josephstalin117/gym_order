@@ -114,12 +114,12 @@ if __name__ == "__main__":
                 time.sleep(2)
                 pass
             elif r['Code'] == '100000':
-                send_message(server_key, str(gym_time) + "预约成功" + r['Code'] + "预约次数" + n, r)
+                send_message(server_key, str(gym_time) + "预约成功" + r['Code'], r)
                 print("预约成功")   
                 print("code:", r['Code'])
                 break
             elif r['Code'] == '100099': 
-                send_message(server_key, str(gym_time) + "预约失败" + r['Code']+ "预约次数" + n, r)
+                send_message(server_key, str(gym_time) + "预约失败" + r['Code'], r)
                 print("预约失败")
                 print("code:", r['Code'])
                 break
