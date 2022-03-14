@@ -4,6 +4,7 @@ import datetime
 import time
 import config
 import json
+from requests.adapters import HTTPAdapter
 
 class GymTime:
     def __init__(self, gym_dict):
@@ -13,7 +14,13 @@ class GymTime:
 
 def is_gym_order(date, startTime, endTime):
     url = "http://wechartdemo.zckx.net/API/TicketHandler.ashx?dataType=json&date=" + date + "&projectNo=1000000637&method=GetStrategyList";
-    data = s.get(url).json().get("list")
+    s.mount('http://', HTTPAdapter(max_retries=3))
+    s.mount('https://', HTTPAdapter(max_retries=3))
+    print(time.strftime('%Y-%m-%d %H:%M:%S'))
+    try:
+        data = s.get(url, timeout=10).json().get("list")
+    except s.exceptions.RequestException as e:
+        print(e)
 
     for item in data:
         gym_item = GymTime(item)
@@ -50,7 +57,14 @@ def gym_order(date, time_detail, user_info, open_id, request_session):
         'sellerNo': 'weixin'
     }
     url = url + 'dataType=json&orderJson=' + str(data)
-    r = request_session.post(url)
+    request_session.mount('http://', HTTPAdapter(max_retries=3))
+    request_session.mount('https://', HTTPAdapter(max_retries=3))
+    
+    try:
+        r = request_session.post(url, timeout=10)
+    except request_session.RequestException as e:
+        print(e)
+
     try:
         return r.json()
     except:
@@ -87,7 +101,7 @@ if __name__ == "__main__":
     #}
     #openId = ''
 
-    gym_time = 14
+    gym_time = 17
 
     s = requests.Session()
     header = {"User-Agent": "Mozilla/5.0 (Linux; Android 10;  AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36 wxwork/3.0.16 MicroMessenger/7.0.1 NetType/WIFI Language/zh",}
