@@ -61,10 +61,11 @@ def gym_order(date, time_detail, user_info, open_id, request_session):
     request_session.mount('https://', HTTPAdapter(max_retries=3))
     
     try:
-        r = request_session.post(url, timeout=10)
-    except request_session.RequestException as e:
+        #r = request_session.post(url, timeout=10)
+        print(time.strftime('%Y-%m-%d %H:%M:%S'))
+        r = request_session.post(url, timeout=20)
+    except requests.exceptions.RequestException as e:
         print(e)
-
     try:
         return r.json()
     except:
